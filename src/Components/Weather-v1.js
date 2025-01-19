@@ -2,10 +2,6 @@ import React from "react";
 import Day from "./Day";
 
 export default class Weather extends React.Component {
-  componentWillUnmount() {
-    // do cleanup here after unmounting
-  }
-
   render() {
     const { weather, displayLocation } = this.props;
     const {

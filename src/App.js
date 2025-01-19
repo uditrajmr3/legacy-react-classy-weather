@@ -4,7 +4,7 @@ import Weather from "./Components/Weather";
 
 class App extends React.Component {
   state = {
-    location: "Patna",
+    location: "",
     isLoading: false,
     displayLocation: "",
     weather: {},
@@ -19,6 +19,7 @@ class App extends React.Component {
   fetchWeather = async () => {
     try {
       const location = this.state.location;
+
       this.setState({ isLoading: true });
 
       // 1) Getting location (geocoding)
@@ -45,26 +46,43 @@ class App extends React.Component {
         weather: weatherData.daily,
       });
     } catch (err) {
-      console.err(err);
+      console.error(err);
     } finally {
       this.setState({ isLoading: false });
     }
   };
 
+  // useEffect []
+  componentDidMount() {
+    const lastLocation = localStorage.getItem("location");
+    if (!lastLocation) return;
+
+    this.setState({ location: lastLocation });
+    if (this.state.location.trim().length > 2) this.fetchWeather();
+  }
+
+  // useEffect [location]
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.location === prevState.location) return;
+    if (this.state.location.trim().length > 2) {
+      this.fetchWeather();
+    } else {
+      this.setState({ weather: {} });
+    }
+
+    localStorage.setItem("location", this.state.location);
+  }
+
   render() {
     return (
       <div className="app">
         <h1>Classy Weather</h1>
-        <div>
-          <input
-            type="text"
-            placeholder="Search from location..."
-            value={this.state.location}
-            onChange={(e) => this.updateLocation(e)}
-          />
-        </div>
+        <Input
+          location={this.state.location}
+          onLocationChange={this.updateLocation}
+        />
 
-        <button onClick={this.fetchWeather}>Get Weather</button>
+        {/* <button onClick={this.fetchWeather}>Get Weather</button> */}
 
         {this.state.isLoading && <p className="loader">Loading...</p>}
 
@@ -74,6 +92,21 @@ class App extends React.Component {
             displayLocation={this.state.displayLocation}
           />
         )}
+      </div>
+    );
+  }
+}
+
+class Input extends React.Component {
+  render() {
+    return (
+      <div>
+        <input
+          type="text"
+          placeholder="Search from location..."
+          value={this.props.location}
+          onChange={this.props.onLocationChange}
+        />
       </div>
     );
   }
