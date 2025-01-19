@@ -3,20 +3,26 @@ import convertToFlag from "./lib/utils/convertToFlag";
 import Weather from "./Components/Weather";
 
 class App extends React.Component {
-  state = {
-    location: "Patna",
-    isLoading: false,
-    displayLocation: "",
-    weather: {},
-  };
+  constructor(props) {
+    super(props);
 
-  updateLocation = (e) => {
+    this.state = {
+      location: "Patna",
+      isLoading: false,
+      displayLocation: "",
+      weather: {},
+    };
+    this.updateLocation = this.updateLocation.bind(this);
+    this.fetchWeather = this.fetchWeather.bind(this);
+  }
+
+  updateLocation(e) {
     this.setState((_) => {
       return { location: e.target.value };
     });
-  };
+  }
 
-  fetchWeather = async () => {
+  async fetchWeather() {
     try {
       const location = this.state.location;
       this.setState({ isLoading: true });
@@ -49,7 +55,7 @@ class App extends React.Component {
     } finally {
       this.setState({ isLoading: false });
     }
-  };
+  }
 
   render() {
     return (
